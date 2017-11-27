@@ -6,7 +6,7 @@ import java.util.*
 
 data class Body(val a: String, val b: Int)
 
-class Tests {
+class JeBatchTest {
 
   val testBody: Body = Body("a", 1)
   val e1: BatchRequestElement<Body, Long> = BatchRequestElement(Operation.GET)
