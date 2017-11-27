@@ -1,0 +1,3 @@
+rootProject.name = 'batch'
+rootProject.buildFileName = 'build.gradle.kts'
+

@@ -1,0 +1,91 @@
+group = 'com.miquido.jebatch'
+
+//TODO convert to kts, apply in build.gradle.kts
+
+ext {
+    artifactId = 'jebatch'
+
+    pubName = 'JeBatch'
+    pubDescription = 'JeBatch - batch request handling library'
+
+    siteUrl = 'https://www.miquido.com'
+    gitUrl = 'https://github.com/miquido/JeBatch'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name licenseName
+            url licenseUrl
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "karolwartak"
+            name "Karol Wartak"
+            email "karol.wartak@miquido.com"
+        }
+    }
+    scm {
+        url gitUrl
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+apply plugin: 'maven-publish'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId project.group
+            artifactId project.artifactId
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('name', project.pubName)
+                root.appendNode('description', project.pubDescription)
+                root.appendNode('url', gitUrl)
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+// Bintray
+apply plugin: 'com.jfrog.bintray'
+bintray {
+    user = project.hasProperty('bintray.user') ? project.property('bintray.user') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintray.apiKey') ? project.property('bintray.apiKey') : System.getenv('BINTRAY_API_KEY')
+
+    publications = ['mavenAar']
+    publish = true
+    pkg {
+        repo = 'maven'
+        name = project.artifactId
+        desc = project.description
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        publicDownloadNumbers = true
+        githubRepo = 'miquido/JeBatch'
+        githubReleaseNotesFile = 'README.md'
+        version {
+            name = project.version
+            released = new Date()
+            vcsTag = 'version-' + project.version
+        }
+    }
+}
