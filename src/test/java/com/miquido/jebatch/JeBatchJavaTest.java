@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-public class JeBatchTest {
+public class JeBatchJavaTest {
 
   class Body {
     public String name;
