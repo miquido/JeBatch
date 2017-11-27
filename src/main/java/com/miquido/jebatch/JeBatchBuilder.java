@@ -25,17 +25,17 @@ public class JeBatchBuilder<In, Out, Id> {
   }
 
   public ErrorBuilder forPut(BiFunction<In, Id, Void> putter) {
-    Put<In, Id> put = jeBatch.put(putter::apply, receiver -> Unit.INSTANCE);
+    Put<In, Id> put = jeBatch.put((id, in) -> { putter.apply(in, id); return Unit.INSTANCE; }, receiver -> Unit.INSTANCE);
     return new ErrorBuilder(put);
   }
 
   public ErrorBuilder forPatch(BiFunction<In, Id, Void> patcher) {
-    Patch<In, Id> patch = jeBatch.patch(patcher::apply, receiver -> Unit.INSTANCE);
+    Patch<In, Id> patch = jeBatch.patch((id, in) -> { patcher.apply(in, id); return Unit.INSTANCE; }, receiver -> Unit.INSTANCE);
     return new ErrorBuilder(patch);
   }
 
   public ErrorBuilder forDelete(Consumer<Id> deleter) {
-    Delete<Id> delete = jeBatch.delete(deleter::accept, receiver -> Unit.INSTANCE);
+    Delete<Id> delete = jeBatch.delete(id -> { deleter.accept(id); return Unit.INSTANCE; }, receiver -> Unit.INSTANCE);
     return new ErrorBuilder(delete);
   }
 
