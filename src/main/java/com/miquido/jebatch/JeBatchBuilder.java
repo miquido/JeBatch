@@ -24,12 +24,12 @@ public class JeBatchBuilder<In, Out, Id> {
     return new ErrorBuilder(post);
   }
 
-  public ErrorBuilder forPut(BiFunction<In, Id, Void> putter) {
+  public ErrorBuilder forPut(BiFunction<In, Id, Unit> putter) {
     Put<In, Id> put = jeBatch.put((id, in) -> { putter.apply(in, id); return Unit.INSTANCE; });
     return new ErrorBuilder(put);
   }
 
-  public ErrorBuilder forPatch(BiFunction<In, Id, Void> patcher) {
+  public ErrorBuilder forPatch(BiFunction<In, Id, Unit> patcher) {
     Patch<In, Id> patch = jeBatch.patch((id, in) -> { patcher.apply(in, id); return Unit.INSTANCE; });
     return new ErrorBuilder(patch);
   }

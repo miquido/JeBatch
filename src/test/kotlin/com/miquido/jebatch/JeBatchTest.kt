@@ -20,8 +20,11 @@ class JeBatchTest {
     val req: BatchRequest<Body, Long> = BatchRequest(listOf(e1, e2, e3, e4, e5))
 
     val batch = JeBatch.builder<Body, Body, Long>()
-        .forGet({ Arrays.asList(testBody) })
-        .withError(RuntimeException::class.java, 400)
+        .forGet { Arrays.asList(testBody) }
+        .and().forPost { 1 }
+        .and().forPut { _, _ -> doSomething() }
+        .and().forPatch { _, _ -> doSomething() }
+        .and().forDelete { _ -> doSomething() }
         .and().build()
 
     val response = batch.process("api/path", req)
@@ -90,11 +93,10 @@ class JeBatchTest {
     val req: BatchRequest<Body, Long> = BatchRequest(listOf(e4, e5))
 
     val batch = JeBatch.builder<Body, Body, Long>()
-        .forPatch({ _, _ -> throwException() })
+        .forPatch { _, _ -> throwException() }
         .withError(RuntimeException::class.java, 400)
         .and()
-        .forDelete({ throwException() })
-        .withError(RuntimeException::class.java, 400)
+        .forDelete { throwException() }
         .and().build()
 
     val response = batch.process("api/path", req)
