@@ -19,17 +19,10 @@ class JeBatchTest {
   fun allMethodsSuccess() {
     val req: BatchRequest<Body, Long> = BatchRequest(listOf(e1, e2, e3, e4, e5))
 
-    JeBatch.builder<Body, Body, Long>()
+    val batch = JeBatch.builder<Body, Body, Long>()
         .forGet({ Arrays.asList(testBody) })
         .withError(RuntimeException::class.java, 400)
-
-    val batch = batch<Body, Body, Long> {
-      get ({ Arrays.asList(testBody) }) {}
-      post ({1}) {}
-      put ({ _, _ -> doSomething() }) {}
-      patch ({ _, _ -> doSomething() }) {}
-      delete ({ _ -> doSomething() }) {}
-    }
+        .and().build()
 
     val response = batch.process("api/path", req)
     val responses = response.responses
@@ -55,23 +48,22 @@ class JeBatchTest {
   fun allMethodsErrors() {
     val req: BatchRequest<Body, Long> = BatchRequest(listOf(e1, e2, e3, e4, e5))
 
-    val batch = batch<Body, Body, Long> {
-      get({ throwException() }) {
-        error(RuntimeException::class.java, 400)
-      }
-      post ({ throwException() }) {
-        error(RuntimeException::class.java, 400)
-      }
-      put ({ _, _ -> throwException() }) {
-        error(RuntimeException::class.java, 400)
-      }
-      patch ({ _, _ -> throwException() }) {
-        error(RuntimeException::class.java, 400)
-      }
-      delete ({ _ -> throwException() }) {
-        error(RuntimeException::class.java, 400)
-      }
-    }
+    val batch = JeBatch.builder<Body, Body, Long>()
+        .forGet({ throwException() })
+        .withError(RuntimeException::class.java, 400)
+        .and()
+        .forPost( { throwException() })
+        .withError(RuntimeException::class.java, 400)
+        .and()
+        .forPut({ _, _ -> throwException() })
+        .withError(RuntimeException::class.java, 400)
+        .and()
+        .forPatch({ _, _ -> throwException() })
+        .withError(RuntimeException::class.java, 400)
+        .and()
+        .forDelete({ throwException() })
+        .withError(RuntimeException::class.java, 400)
+        .and().build()
 
     val response = batch.process("api/path", req)
     val responses = response.responses
@@ -97,12 +89,13 @@ class JeBatchTest {
   fun unhandledError() {
     val req: BatchRequest<Body, Long> = BatchRequest(listOf(e4, e5))
 
-    val batch = batch<Body, Body, Long> {
-      patch ({ _, _ -> throwException() }) {
-        error(RuntimeException::class.java, 400)
-      }
-      delete ({ _ -> throwException() }) {}
-    }
+    val batch = JeBatch.builder<Body, Body, Long>()
+        .forPatch({ _, _ -> throwException() })
+        .withError(RuntimeException::class.java, 400)
+        .and()
+        .forDelete({ throwException() })
+        .withError(RuntimeException::class.java, 400)
+        .and().build()
 
     val response = batch.process("api/path", req)
     val responses = response.responses
@@ -115,9 +108,9 @@ class JeBatchTest {
   fun notAllowedMethod() {
     val req: BatchRequest<Body, Long> = BatchRequest(listOf(e1, e2))
 
-    val batch = batch<Body, Body, Long> {
-      get ({ Arrays.asList(testBody) }) {}
-    }
+    val batch = JeBatch.builder<Body, Body, Long>()
+        .forGet({ Arrays.asList(testBody) })
+        .and().build()
 
     val response = batch.process("api/path", req)
     val responses = response.responses

@@ -3,14 +3,13 @@ package com.miquido.jebatch
 import java.util.HashMap
 
 
-@BuilderTag
 abstract class RestMethod<in Req, Res, in Id>(private var handler: ((Id, Req) -> Res),
                                               private val successStatus: Int = 200) {
 
   private val errors: MutableMap<Class<out Exception>, Int> = HashMap()
 
   fun <E : Exception> error(exceptionClass: Class<E>, status: Int) {
-    errors.put(exceptionClass, status)
+    errors[exceptionClass] = status
   }
 
   fun perform(id: Id, req: Req): CallResult {
