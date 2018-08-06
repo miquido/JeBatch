@@ -1,9 +1,15 @@
+//To publish a new version:
+//1. update version in build.gradle
+//2. git tag version-[version]
+//3. git commit && git push
+//4. ./gradlew clean bintrayUpload -Pbintray.user=[username] -Pbintray.apiKey=[api_key]
+
 group = 'com.miquido.jebatch'
 
-//TODO convert to kts, apply in build.gradle.kts
+//TODO convert to kts
 
 ext {
-    artifactId = 'jebatch'
+    artifactId = 'JeBatch'
 
     pubName = 'JeBatch'
     pubDescription = 'JeBatch - batch request handling library'
@@ -37,8 +43,9 @@ def pomConfig = {
 }
 
 task sourcesJar(type: Jar) {
-    from sourceSets.main.java.srcDirs
+    from (sourceSets.main.kotlin.srcDirs, sourceSets.main.java.srcDirs)
     classifier = 'sources'
+    baseName = 'JeBatch'
 }
 
 artifacts {
@@ -70,10 +77,11 @@ bintray {
     user = project.hasProperty('bintray.user') ? project.property('bintray.user') : System.getenv('BINTRAY_USER')
     key = project.hasProperty('bintray.apiKey') ? project.property('bintray.apiKey') : System.getenv('BINTRAY_API_KEY')
 
-    publications = ['mavenAar']
+    publications = ['mavenJava']
     publish = true
     pkg {
-        repo = 'maven'
+        userOrg = 'miquido'
+        repo = 'maven-repo'
         name = project.artifactId
         desc = project.description
         websiteUrl = siteUrl

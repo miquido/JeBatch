@@ -8,18 +8,19 @@ buildscript {
     kotlin_version = "1.2.30"
 
     repositories {
-        mavenCentral()
+        jcenter()
     }
     
     dependencies {
         classpath(kotlin("gradle-plugin", kotlin_version))
+        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3")
     }
-    
 }
 
 apply {
     plugin("java")
     plugin("kotlin")
+    from("publish-config.gradle")
 }
 
 plugins {
