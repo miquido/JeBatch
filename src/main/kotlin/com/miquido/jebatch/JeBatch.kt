@@ -27,7 +27,7 @@ class JeBatch<In, Out, Id> {
     return get as Get<Out, Id>
   }
 
-  fun getAll(getter: () -> List<Out>): GetAll<Out> {
+  fun getAll(getter: () -> Collection<Out>): GetAll<Out> {
     getAll = GetAll(getter)
     return getAll as GetAll<Out>
   }

@@ -26,7 +26,7 @@ abstract class RestMethod<in Req, Res, in Id>(private var handler: ((Id, Req) ->
 class Get<Out, Id>(getter: (Id) -> Out) : RestMethod<Unit, Out, Id>({ id, _ -> getter.invoke(id) })
 
 
-class GetAll<Out>(getter: () -> List<Out>) : RestMethod<Unit, List<Out>, Unit>({ _, _ -> getter.invoke() })
+class GetAll<Out>(getter: () -> Collection<Out>) : RestMethod<Unit, Collection<Out>, Unit>({ _, _ -> getter.invoke() })
 
 
 class Post<in In, Id>(poster: (In) -> Id) : RestMethod<In, Id, Unit>({ _, t -> poster.invoke(t) }, 201)
