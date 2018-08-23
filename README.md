@@ -6,13 +6,11 @@ For use with Kotlin and Java.
 
 
 # Use cases and limitations
-JeBatch is designed for handling REST-compliant batch requests on collection of resources: getting collection with GET, creating a resource with POST, replacing it with PUT, updating with PATCH or deleting with DELETE.
+JeBatch is designed for handling REST-compliant batch requests on collection of resources: getting collection or a single resource with GET, creating a resource with POST, replacing it with PUT, updating with PATCH or deleting with DELETE.
 
 Supported HTTP methods are GET, POST, PUT, PATCH and DELETE.
 
-GET works for returning whole collection, not single resources identified by id.
-
-POST does not allow returning response body to the caller.
+Only GET allows returning response body to the caller.
 
 # Usage
 Creating a JeBatch instance:
@@ -59,5 +57,5 @@ val response = batch.process("PATH_TO_RESOURCES_COLLECTION", batchRequest)
 Since base path is passed on each process() invocation you can use one instance of JeBatch for handling multiple paths, as long as request and response bodies and id remain the same type.
 
 # Further development
-* Add GET for single resource.
+* Support request params (usecase: limit and offset in GET on collection).
 * Support returning body from any method. Not very RESTy but useful.

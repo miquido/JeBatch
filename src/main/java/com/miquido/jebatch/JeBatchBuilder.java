@@ -14,9 +14,14 @@ public class JeBatchBuilder<In, Out, Id> {
 
   JeBatchBuilder() {}
 
-  public ErrorBuilder forGet(Supplier<List<Out>> getter) {
-    Get<Out> get = jeBatch.get(getter::get);
+  public ErrorBuilder forGet(Function<Id, Out> getter) {
+    Get<Out, Id> get = jeBatch.get(getter::apply);
     return new ErrorBuilder(get);
+  }
+
+  public ErrorBuilder forGetAll(Supplier<List<Out>> getter) {
+    GetAll<Out> getAll = jeBatch.getAll(getter::get);
+    return new ErrorBuilder(getAll);
   }
 
   public ErrorBuilder forPost(Function<In, Id> poster) {
@@ -46,9 +51,9 @@ public class JeBatchBuilder<In, Out, Id> {
 
   class ErrorBuilder {
 
-    private final RestMethod method;
+    final RestMethod method;
 
-    private ErrorBuilder(RestMethod method) {
+    ErrorBuilder(RestMethod method) {
       this.method = method;
     }
 
@@ -60,6 +65,5 @@ public class JeBatchBuilder<In, Out, Id> {
     public JeBatchBuilder<In, Out, Id> and() {
       return JeBatchBuilder.this;
     }
-
   }
 }

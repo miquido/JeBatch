@@ -22,7 +22,7 @@ public class JeBatchJavaTest {
   @Test
   public void batchInJava() {
     JeBatch<Body, Body, Long> jeBatch = JeBatch.<Body, Body, Long>builder()
-        .forGet(() -> Collections.singletonList(testBody))
+        .forGetAll(() -> Collections.singletonList(testBody))
         .withError(RuntimeException.class, 400)
         .and()
         .forPost(o -> 1L)
