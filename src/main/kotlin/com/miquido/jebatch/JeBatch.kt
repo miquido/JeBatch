@@ -14,16 +14,22 @@ class JeBatch<In, Out, Id> {
   private val nullIdResult: CallResult = CallResult(400, "null id")
   private val notAllowedResult: CallResult = CallResult(405)
 
-  private var get: Get<Out>? = null
+  private var get: Get<Out, Id>? = null
+  private var getAll: GetAll<Out>? = null
   private var post: Post<In, Id>? = null
   private var put: Put<In, Id>? = null
   private var patch: Patch<In, Id>? = null
   private var delete: Delete<Id>? = null
 
 
-  fun get(getter: () -> List<Out>): Get<Out> {
+  fun get(getter: (Id) -> Out): Get<Out, Id> {
     get = Get(getter)
-    return get as Get<Out>
+    return get as Get<Out, Id>
+  }
+
+  fun getAll(getter: () -> Collection<Out>): GetAll<Out> {
+    getAll = GetAll(getter)
+    return getAll as GetAll<Out>
   }
 
   fun post(poster: (In) -> Id): Post<In, Id> {
@@ -52,7 +58,10 @@ class JeBatch<In, Out, Id> {
       val (operation, body, id) = element
       val (status, message, result) = when (operation) {
 
-        GET -> get?.perform(Unit, Unit) ?: notAllowedResult
+        GET -> when (id) {
+          null -> getAll?.perform(Unit, Unit) ?: notAllowedResult
+          else -> get?.perform(id, Unit) ?: notAllowedResult
+        }
 
         POST -> when (body) {
           null -> emptyBodyResult
@@ -79,7 +88,7 @@ class JeBatch<In, Out, Id> {
 
       when (operation) {
         POST -> BatchResponseElement(status, basePath + if (result != null) "/$result" else "", message, null)
-        GET -> BatchResponseElement(status, basePath, message, result)
+        GET -> BatchResponseElement(status, if (id == null) basePath else "$basePath/$id", message, result)
         else -> BatchResponseElement(status, "$basePath/$id", message, null)
       }
     }
